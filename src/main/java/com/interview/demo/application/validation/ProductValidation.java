@@ -1,5 +1,6 @@
 package com.interview.demo.application.validation;
 
+import com.interview.demo.constant.database.ProductStatusEnum;
 import com.interview.demo.core.validator.exception.DataNotFoundException;
 import com.interview.demo.domain.entities.database.Category;
 import com.interview.demo.domain.entities.database.Product;
@@ -16,9 +17,7 @@ public class ProductValidation {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    /**
-     * Tìm product theo id, ném exception nếu không tồn tại.
-     */
+
     public Product validateProductThenReturn(UUID id) {
         Product product = productRepository.findById(id);
 
@@ -26,6 +25,19 @@ public class ProductValidation {
             throw new DataNotFoundException(
                     String.format("Product with ID %s not found", id)
             );
+        return product;
+    }
+
+
+    public Product validateActiveProductThenReturn(UUID id) {
+        Product product = validateProductThenReturn(id);
+
+        if (product.getStatus() != ProductStatusEnum.ACTIVE) {
+            throw new IllegalArgumentException(
+                    String.format("Product '%s' is not available for purchase (status: %s)",
+                            product.getName(), product.getStatus().name())
+            );
+        }
         return product;
     }
 

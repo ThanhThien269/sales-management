@@ -6,6 +6,7 @@ import com.interview.demo.domain.entities.api.request.FilterRequest;
 import com.interview.demo.domain.entities.api.request.Pagination;
 import com.interview.demo.domain.entities.api.response.ApiResponse;
 import com.interview.demo.domain.entities.request_dto.invoice.InvoiceFilterOption;
+import com.interview.demo.domain.entities.response_dto.invoice.InvoiceItemResponse;
 import com.interview.demo.domain.entities.response_dto.invoice.InvoiceResponse;
 import com.interview.demo.domain.repositories.InvoiceRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,13 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class FilterInvoiceUseCase extends UseCase<FilterInvoiceUseCase.InputValue, ApiResponse, UseCaseContext> {
 
     private static final int DEFAULT_PAGE_SIZE = 10;
-
     private final InvoiceRepository invoiceRepository;
 
     @Override
@@ -28,14 +31,8 @@ public class FilterInvoiceUseCase extends UseCase<FilterInvoiceUseCase.InputValu
         FilterRequest<InvoiceFilterOption> filterRequest = input.request();
 
         if (filterRequest.getPagination() == null) {
-            filterRequest.setPagination(
-                    Pagination.builder()
-                            .page(1)
-                            .size(DEFAULT_PAGE_SIZE)
-                            .build()
-            );
+            filterRequest.setPagination(Pagination.builder().page(1).size(DEFAULT_PAGE_SIZE).build());
         }
-
         if (filterRequest.getFilterOption() == null) {
             filterRequest.setFilterOption(new InvoiceFilterOption());
         }
@@ -44,12 +41,24 @@ public class FilterInvoiceUseCase extends UseCase<FilterInvoiceUseCase.InputValu
         Pagination pagination = filterRequest.getPagination();
 
         List<InvoiceResponse> invoices = invoiceRepository.findByFilterOptions(
-                filterOption,
-                pagination.getPage(),
-                pagination.getSize()
-        );
+                filterOption, pagination.getPage(), pagination.getSize());
 
         if (invoices == null) invoices = List.of();
+
+        // Batch-fetch items cho tất cả invoices trong 1 query
+        if (!invoices.isEmpty()) {
+            List<UUID> invoiceIds = invoices.stream()
+                    .map(i -> UUID.fromString(i.getId()))
+                    .collect(Collectors.toList());
+
+            List<InvoiceItemResponse> allItems = invoiceRepository.findItemsByInvoiceIds(invoiceIds);
+
+            // Group items theo invoiceId rồi gán vào từng invoice
+            Map<String, List<InvoiceItemResponse>> itemMap = allItems.stream()
+                    .collect(Collectors.groupingBy(InvoiceItemResponse::getInvoiceId));
+
+            invoices.forEach(inv -> inv.setItems(itemMap.getOrDefault(inv.getId(), List.of())));
+        }
 
         input.httpServletResponse().setHeader(
                 "X-Total",
@@ -68,4 +77,3 @@ public class FilterInvoiceUseCase extends UseCase<FilterInvoiceUseCase.InputValu
             HttpServletResponse httpServletResponse
     ) implements UseCase.InputValue {}
 }
-

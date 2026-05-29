@@ -5,32 +5,31 @@
 
 <mapper namespace="com.interview.demo.infrastructure.persistence.mybatis.InvoiceMybatisRepository">
 
+    <!-- ─── Filter invoices ─────────────────────────────────────── -->
     <select id="findByFilterOptions"
             resultType="com.interview.demo.domain.entities.response_dto.invoice.InvoiceResponse">
 
         SELECT
             i.id,
-            i.invoice_number    AS invoiceNumber,
-            i.invoice_note      AS invoiceNote,
-            i.product_id        AS productId,
-            p.name              AS productName,
-            i.quantity,
-            i.original_amount   AS originalAmount,
-            i.extra_fee         AS extraFee,
-            i.discount_amount   AS discountAmount,
-            i.discount_percentage AS discountPercentage,
-            i.total_amount      AS totalAmount,
-            i.status_id         AS statusId,
+            i.invoice_number        AS invoiceNumber,
+            i.invoice_note          AS invoiceNote,
+            i.customer_name         AS customerName,
+            i.customer_phone        AS customerPhone,
+            i.original_amount       AS originalAmount,
+            i.extra_fee             AS extraFee,
+            i.discount_amount       AS discountAmount,
+            i.discount_percentage   AS discountPercentage,
+            i.total_amount          AS totalAmount,
+            i.status_id             AS statusId,
             CASE i.status_id
                 WHEN 1 THEN 'WAITING'
                 WHEN 2 THEN 'PAID'
                 WHEN 3 THEN 'CANCELED'
-            END                 AS statusName,
-            i.created_at        AS createdAt,
-            i.updated_at        AS updatedAt,
-            COUNT(*) OVER()     AS total
+            END                     AS statusName,
+            i.created_at            AS createdAt,
+            i.updated_at            AS updatedAt,
+            COUNT(*) OVER()         AS total
         FROM invoices i
-        LEFT JOIN products p ON p.id = i.product_id
         WHERE 1 = 1
 
         <if test="f.invoiceNumber != null and f.invoiceNumber != ''">
@@ -57,6 +56,24 @@
 
     </select>
 
+    <!-- ─── Batch-fetch items for invoice IDs ───────────────────── -->
+    <select id="findItemsByInvoiceIds"
+            resultType="com.interview.demo.domain.entities.response_dto.invoice.InvoiceItemResponse">
+
+        SELECT
+            ii.invoice_id   AS invoiceId,
+            ii.product_id   AS productId,
+            p.name          AS productName,
+            ii.quantity,
+            ii.price,
+            (ii.price * ii.quantity) AS subTotal
+        FROM invoice_items ii
+        LEFT JOIN products p ON p.id = ii.product_id
+        WHERE ii.invoice_id IN
+        <foreach item="id" collection="invoiceIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </select>
+
 </mapper>
-
-

@@ -8,8 +8,11 @@ import com.interview.demo.core.usecase.UseCaseContext;
 import com.interview.demo.domain.entities.api.response.ApiResponse;
 import com.interview.demo.domain.entities.api.response.FixedLocaleMessage;
 import com.interview.demo.domain.entities.database.Invoice;
+import com.interview.demo.domain.entities.database.InvoiceItem;
 import com.interview.demo.domain.entities.database.Product;
 import com.interview.demo.domain.entities.request_dto.invoice.CreateInvoiceRequestBody;
+import com.interview.demo.domain.entities.request_dto.invoice.InvoiceItemRequest;
+import com.interview.demo.domain.entities.response_dto.invoice.InvoiceItemResponse;
 import com.interview.demo.domain.entities.response_dto.invoice.InvoiceResponse;
 import com.interview.demo.domain.repositories.InvoiceRepository;
 import com.interview.demo.domain.repositories.ProductRepository;
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Transactional
@@ -37,38 +42,59 @@ public class CreateInvoiceUseCase extends UseCase<CreateInvoiceUseCase.InputValu
         CreateInvoiceRequestBody body = input.requestBody();
 
 
-        Product product = productValidation.validateProductThenReturn(body.getProductId());
-
-        // Validate đủ stock
-        int orderQty = body.getQuantity();
-        int currentStock = product.getQuantity() != null ? product.getQuantity() : 0;
-        if (orderQty > currentStock) {
-            throw new IllegalArgumentException(
-                    String.format("Not enough stock. Requested: %d, Available: %d", orderQty, currentStock)
-            );
-        }
-
-
         boolean hasDiscountAmount = body.getDiscountAmount() != null
                 && body.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0;
         boolean hasDiscountPercentage = body.getDiscountPercentage() != null
                 && body.getDiscountPercentage().compareTo(BigDecimal.ZERO) > 0;
-
         if (hasDiscountAmount && hasDiscountPercentage) {
             throw new IllegalArgumentException(
-                    MessageCode.CANNOT_APPLY_DISCOUNT_AMOUNT_AND_PERCENTAGE.name()
-            );
+                    MessageCode.CANNOT_APPLY_DISCOUNT_AMOUNT_AND_PERCENTAGE.name());
         }
 
 
-        BigDecimal originalAmount = body.getOriginalAmount() != null
-                ? body.getOriginalAmount() : BigDecimal.ZERO;
-        BigDecimal extraFee = body.getExtraFee() != null
-                ? body.getExtraFee() : BigDecimal.ZERO;
-        BigDecimal discountAmount = body.getDiscountAmount() != null
-                ? body.getDiscountAmount() : BigDecimal.ZERO;
-        BigDecimal discountPercentage = body.getDiscountPercentage() != null
-                ? body.getDiscountPercentage() : BigDecimal.ZERO;
+        BigDecimal originalAmount = BigDecimal.ZERO;
+        List<InvoiceItem> itemsToSave = new ArrayList<>();
+        List<InvoiceItemResponse> itemResponses = new ArrayList<>();
+
+        for (InvoiceItemRequest itemReq : body.getItems()) {
+            Product product = productValidation.validateActiveProductThenReturn(itemReq.getProductId());
+
+            int orderQty = itemReq.getQuantity();
+            int stock = product.getQuantity() != null ? product.getQuantity() : 0;
+            if (orderQty > stock) {
+                throw new IllegalArgumentException(String.format(
+                        "Not enough stock for product '%s'. Requested: %d, Available: %d",
+                        product.getName(), orderQty, stock));
+            }
+
+            BigDecimal price = product.getPrice();
+            BigDecimal subTotal = price.multiply(BigDecimal.valueOf(orderQty));
+            originalAmount = originalAmount.add(subTotal);
+
+
+            product.setQuantity(stock - orderQty);
+            int sold = product.getSoldQuantity() != null ? product.getSoldQuantity() : 0;
+            product.setSoldQuantity(sold + orderQty);
+            productRepository.save(product);
+
+            itemsToSave.add(InvoiceItem.builder()
+                    .productId(itemReq.getProductId())
+                    .quantity(orderQty)
+                    .price(price)
+                    .build());
+
+            itemResponses.add(InvoiceItemResponse.builder()
+                    .productId(itemReq.getProductId().toString())
+                    .quantity(orderQty)
+                    .price(price)
+                    .subTotal(subTotal)
+                    .build());
+        }
+
+        // ── 3. Tính totalAmount ──────────────────────────────────────────
+        BigDecimal extraFee = body.getExtraFee() != null ? body.getExtraFee() : BigDecimal.ZERO;
+        BigDecimal discountAmount = body.getDiscountAmount() != null ? body.getDiscountAmount() : BigDecimal.ZERO;
+        BigDecimal discountPercentage = body.getDiscountPercentage() != null ? body.getDiscountPercentage() : BigDecimal.ZERO;
 
         BigDecimal totalAmount;
         if (hasDiscountPercentage) {
@@ -80,11 +106,12 @@ public class CreateInvoiceUseCase extends UseCase<CreateInvoiceUseCase.InputValu
             totalAmount = originalAmount.subtract(discountAmount).add(extraFee);
         }
 
+        // ── 4. Lưu Invoice ───────────────────────────────────────────────
         Invoice invoice = Invoice.builder()
                 .invoiceNumber(generateInvoiceNumber())
                 .invoiceNote(body.getNote())
-                .productId(body.getProductId())
-                .quantity(orderQty)
+                .customerName(body.getCustomerName())
+                .customerPhone(body.getCustomerPhoneNumber())
                 .originalAmount(originalAmount)
                 .extraFee(extraFee)
                 .discountAmount(discountAmount)
@@ -95,19 +122,18 @@ public class CreateInvoiceUseCase extends UseCase<CreateInvoiceUseCase.InputValu
 
         Invoice saved = invoiceRepository.save(invoice);
 
-        // Trừ stockQuantity, cộng soldQuantity của product
-        product.setQuantity(currentStock - orderQty);
-        int currentSold = product.getSoldQuantity() != null ? product.getSoldQuantity() : 0;
-        product.setSoldQuantity(currentSold + orderQty);
-        productRepository.save(product);
+        // ── 5. Lưu InvoiceItems (gắn invoiceId) ─────────────────────────
+        itemsToSave.forEach(item -> item.setInvoiceId(saved.getId()));
+        invoiceRepository.saveAllItems(itemsToSave);
 
+        // ── 6. Build response ────────────────────────────────────────────
         InvoiceResponse response = InvoiceResponse.builder()
                 .id(saved.getId().toString())
                 .invoiceNumber(saved.getInvoiceNumber())
                 .invoiceNote(saved.getInvoiceNote())
-                .productId(saved.getProductId().toString())
-                .productName(product.getName())
-                .quantity(saved.getQuantity())
+                .customerName(saved.getCustomerName())
+                .customerPhone(saved.getCustomerPhone())
+                .items(itemResponses)
                 .originalAmount(saved.getOriginalAmount())
                 .extraFee(saved.getExtraFee())
                 .discountAmount(saved.getDiscountAmount())
@@ -127,13 +153,8 @@ public class CreateInvoiceUseCase extends UseCase<CreateInvoiceUseCase.InputValu
                 .build();
     }
 
-    /** Sinh invoice number: 10 ký tự chữ hoa + số, ví dụ: "A3F9B2C1D0" */
     private String generateInvoiceNumber() {
-        return UUID.randomUUID()
-                .toString()
-                .replace("-", "")
-                .substring(0, 10)
-                .toUpperCase();
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
     }
 
     public record InputValue(
@@ -141,7 +162,4 @@ public class CreateInvoiceUseCase extends UseCase<CreateInvoiceUseCase.InputValu
             HttpServletRequest httpServletRequest
     ) implements UseCase.InputValue {}
 }
-
-
-
 

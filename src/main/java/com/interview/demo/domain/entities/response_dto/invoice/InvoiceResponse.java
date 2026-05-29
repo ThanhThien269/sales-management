@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,9 +16,9 @@ public class InvoiceResponse extends FilterResult {
     private String id;
     private String invoiceNumber;
     private String invoiceNote;
-    private String productId;
-    private String productName;
-    private Integer quantity;
+    private String customerName;
+    private String customerPhone;
+    private List<InvoiceItemResponse> items;
     private BigDecimal originalAmount;
     private BigDecimal extraFee;
     private BigDecimal discountAmount;
@@ -28,5 +29,3 @@ public class InvoiceResponse extends FilterResult {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
-
-

@@ -7,22 +7,17 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "invoices",
-        indexes = {
-                @Index(name = "idx_invoices_tbl_product_id", columnList = "product_id")
-        }
-)
+@Table(name = "invoices")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Invoice extends DbEntity {
+
     @Id
     private UUID id;
 
@@ -32,14 +27,14 @@ public class Invoice extends DbEntity {
     @Column(name = "invoice_note")
     private String invoiceNote;
 
+    @Column(name = "customer_name", length = 100)
+    private String customerName;
+
+    @Column(name = "customer_phone", length = 20)
+    private String customerPhone;
+
     @Column(name = "total_amount", precision = 20, scale = 2, nullable = false)
     private BigDecimal totalAmount;
-
-    @Column(name = "product_id", nullable = false)
-    private UUID productId;
-
-    @Column(nullable = false)
-    private Integer quantity;
 
     @Column(name = "extra_fee", precision = 20, scale = 2)
     private BigDecimal extraFee;
@@ -64,8 +59,6 @@ public class Invoice extends DbEntity {
 
     @PrePersist
     public void prePersist() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID();
-        }
+        if (this.id == null) this.id = UUID.randomUUID();
     }
 }
