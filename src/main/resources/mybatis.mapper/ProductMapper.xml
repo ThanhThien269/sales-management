@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.interview.demo.infrastructure.persistence.mybatis.ProductMybatisRepository">
+
+    <select id="findByFilterOptions"
+            resultType="com.interview.demo.domain.entities.response_dto.product.ProductResponse">
+
+        SELECT
+            p.id,
+            p.category_id   AS categoryId,
+            p.name,
+            p.description,
+            p.image,
+            p.price,
+            p.quantity      AS stockQuantity,
+            p.status_id     AS statusId,
+            CASE p.status_id
+                WHEN 1 THEN 'ACTIVE'
+                WHEN 2 THEN 'INACTIVE'
+                WHEN 3 THEN 'OUT_OF_STOCK'
+            END             AS statusName,
+            p.created_at    AS createdAt,
+            p.updated_at    AS updatedAt,
+            COUNT(*) OVER() AS total
+        FROM products p
+        WHERE 1 = 1
+
+        <if test="f.productId != null">
+            AND p.id = #{f.productId}
+        </if>
+
+        <if test="f.name != null and f.name != ''">
+            AND p.name ILIKE CONCAT('%', #{f.name}, '%')
+        </if>
+
+        <if test="f.categoryId != null">
+            AND p.category_id = #{f.categoryId}
+        </if>
+
+        <if test="f.statusId != null">
+            AND p.status_id = #{f.statusId}
+        </if>
+
+        ORDER BY p.created_at DESC
+
+        <if test="page != null and size != null">
+            LIMIT #{size}
+            OFFSET (#{page} - 1) * #{size}
+        </if>
+
+    </select>
+
+</mapper>

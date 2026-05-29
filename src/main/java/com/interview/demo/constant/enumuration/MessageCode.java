@@ -1,0 +1,16 @@
+package com.interview.demo.constant.enumuration;
+
+public enum MessageCode {
+    // EXCEPTION
+    INVALID_REQUEST_PARAMETERS,
+    INTERNAL_SERVER_ERROR,
+    DATA_NOT_FOUND,
+
+    // COMMON
+    CREATE_SUCCESSFULLY,
+    UPDATE_SUCCESSFULLY,
+    DELETE_SUCCESSFULLY,
+
+    CANNOT_APPLY_DISCOUNT_AMOUNT_AND_PERCENTAGE,
+
+}
