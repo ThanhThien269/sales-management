@@ -1,4 +1,4 @@
-package com.interview.demo.core.deserializer;
+package com.interview.demo.common.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;

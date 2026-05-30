@@ -1,4 +1,4 @@
-package com.interview.demo.core.usecase;
+package com.interview.demo.common.usecase;
 
 import org.springframework.stereotype.Service;
 

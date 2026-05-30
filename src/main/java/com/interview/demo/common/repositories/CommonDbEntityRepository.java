@@ -1,4 +1,4 @@
-package com.interview.demo.core.repositories;
+package com.interview.demo.common.repositories;
 
 import java.util.List;
 

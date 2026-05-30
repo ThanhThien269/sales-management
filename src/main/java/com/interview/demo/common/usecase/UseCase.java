@@ -1,4 +1,4 @@
-package com.interview.demo.core.usecase;
+package com.interview.demo.common.usecase;
 
 public abstract class UseCase<In extends UseCase.InputValue, Out extends UseCase.OutputValue, Ctx extends UseCase.Context> {
     public abstract Out execute(In input, Ctx context);

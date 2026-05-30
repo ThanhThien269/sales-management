@@ -1,6 +1,6 @@
 package com.interview.demo.application.validation;
 
-import com.interview.demo.core.validator.exception.DataNotFoundException;
+import com.interview.demo.common.validator.exception.DataNotFoundException;
 import com.interview.demo.domain.entities.database.Invoice;
 import com.interview.demo.domain.repositories.InvoiceRepository;
 import lombok.RequiredArgsConstructor;

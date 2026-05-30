@@ -2,8 +2,8 @@ package com.interview.demo.application.usecase.product;
 
 import com.interview.demo.application.validation.ProductValidation;
 import com.interview.demo.constant.enumuration.MessageCode;
-import com.interview.demo.core.usecase.UseCase;
-import com.interview.demo.core.usecase.UseCaseContext;
+import com.interview.demo.common.usecase.UseCase;
+import com.interview.demo.common.usecase.UseCaseContext;
 import com.interview.demo.domain.entities.api.response.ApiResponse;
 import com.interview.demo.domain.entities.api.response.FixedLocaleMessage;
 import com.interview.demo.domain.entities.database.Product;

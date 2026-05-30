@@ -1,4 +1,4 @@
-package com.interview.demo.core.filter;
+package com.interview.demo.common.filter;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

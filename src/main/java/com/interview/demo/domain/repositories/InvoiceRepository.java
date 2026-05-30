@@ -1,6 +1,6 @@
 package com.interview.demo.domain.repositories;
 
-import com.interview.demo.core.repositories.CommonDbEntityRepository;
+import com.interview.demo.common.repositories.CommonDbEntityRepository;
 import com.interview.demo.domain.entities.database.Invoice;
 import com.interview.demo.domain.entities.database.InvoiceItem;
 import com.interview.demo.domain.entities.request_dto.invoice.InvoiceFilterOption;

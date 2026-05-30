@@ -2,7 +2,7 @@ package com.interview.demo.application.controller;
 
 import com.interview.demo.application.usecase.invoice.CreateInvoiceUseCase;
 import com.interview.demo.application.usecase.invoice.FilterInvoiceUseCase;
-import com.interview.demo.core.usecase.UseCaseExecutor;
+import com.interview.demo.common.usecase.UseCaseExecutor;
 import com.interview.demo.domain.entities.api.request.FilterRequest;
 import com.interview.demo.domain.entities.api.response.ApiResponse;
 import com.interview.demo.domain.entities.api.response.ResponseMapper;

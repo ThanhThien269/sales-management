@@ -1,4 +1,4 @@
-package com.interview.demo.core.deserializer;
+package com.interview.demo.common.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.interview.demo.core.filter.FilterOption;
+import com.interview.demo.common.filter.FilterOption;
 
 
 import java.io.IOException;

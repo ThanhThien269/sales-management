@@ -1,4 +1,4 @@
-package com.interview.demo.core.usecase;
+package com.interview.demo.common.usecase;
 
 public abstract class UseCaseContext implements UseCase.Context {
 }

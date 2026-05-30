@@ -1,7 +1,7 @@
 package com.interview.demo.application.controller;
 
 import com.interview.demo.application.usecase.GetListCategoryUseCase;
-import com.interview.demo.core.usecase.UseCaseExecutor;
+import com.interview.demo.common.usecase.UseCaseExecutor;
 import com.interview.demo.domain.entities.api.response.ApiResponse;
 import com.interview.demo.domain.entities.api.response.ResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;

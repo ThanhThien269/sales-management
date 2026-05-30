@@ -1,10 +1,8 @@
 package com.interview.demo.application.usecase;
 
-import com.interview.demo.constant.enumuration.MessageCode;
-import com.interview.demo.core.usecase.UseCase;
-import com.interview.demo.core.usecase.UseCaseContext;
+import com.interview.demo.common.usecase.UseCase;
+import com.interview.demo.common.usecase.UseCaseContext;
 import com.interview.demo.domain.entities.api.response.ApiResponse;
-import com.interview.demo.domain.entities.api.response.FixedLocaleMessage;
 import com.interview.demo.domain.entities.database.Category;
 import com.interview.demo.domain.repositories.CategoryRepository;
 import jakarta.servlet.http.HttpServletRequest;

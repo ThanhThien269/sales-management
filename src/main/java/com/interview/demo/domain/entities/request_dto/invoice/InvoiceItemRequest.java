@@ -1,6 +1,6 @@
 package com.interview.demo.domain.entities.request_dto.invoice;
 
-import com.interview.demo.core.validator.uuid.UuidValid;
+import com.interview.demo.common.validator.uuid.UuidValid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

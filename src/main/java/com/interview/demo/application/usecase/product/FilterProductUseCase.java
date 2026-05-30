@@ -1,7 +1,7 @@
 package com.interview.demo.application.usecase.product;
 
-import com.interview.demo.core.usecase.UseCase;
-import com.interview.demo.core.usecase.UseCaseContext;
+import com.interview.demo.common.usecase.UseCase;
+import com.interview.demo.common.usecase.UseCaseContext;
 import com.interview.demo.domain.entities.api.request.FilterRequest;
 import com.interview.demo.domain.entities.api.request.Pagination;
 import com.interview.demo.domain.entities.api.response.ApiResponse;

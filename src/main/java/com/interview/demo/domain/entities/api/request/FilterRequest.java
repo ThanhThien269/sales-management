@@ -3,7 +3,7 @@ package com.interview.demo.domain.entities.api.request;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.interview.demo.core.filter.FilterOption;
+import com.interview.demo.common.filter.FilterOption;
 import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;

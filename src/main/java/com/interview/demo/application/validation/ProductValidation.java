@@ -1,7 +1,7 @@
 package com.interview.demo.application.validation;
 
 import com.interview.demo.constant.database.ProductStatusEnum;
-import com.interview.demo.core.validator.exception.DataNotFoundException;
+import com.interview.demo.common.validator.exception.DataNotFoundException;
 import com.interview.demo.domain.entities.database.Category;
 import com.interview.demo.domain.entities.database.Product;
 import com.interview.demo.domain.repositories.CategoryRepository;

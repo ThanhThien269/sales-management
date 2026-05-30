@@ -1,4 +1,4 @@
-package com.interview.demo.core.validator.exception;
+package com.interview.demo.common.validator.exception;
 
 import com.interview.demo.domain.entities.api.response.LocaleMessage;
 import lombok.*;

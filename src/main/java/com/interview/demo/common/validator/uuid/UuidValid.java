@@ -1,4 +1,4 @@
-package com.interview.demo.core.validator.uuid;
+package com.interview.demo.common.validator.uuid;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

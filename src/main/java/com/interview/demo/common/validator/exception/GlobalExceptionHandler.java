@@ -1,4 +1,4 @@
-package com.interview.demo.core.validator.exception;
+package com.interview.demo.common.validator.exception;
 
 import com.interview.demo.constant.enumuration.MessageCode;
 import com.interview.demo.domain.entities.api.response.ApiResponse;

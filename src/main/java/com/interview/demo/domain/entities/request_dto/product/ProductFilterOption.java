@@ -1,6 +1,6 @@
 package com.interview.demo.domain.entities.request_dto.product;
 
-import com.interview.demo.core.filter.FilterOption;
+import com.interview.demo.common.filter.FilterOption;
 import lombok.*;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package com.interview.demo.domain.entities.api.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.interview.demo.core.usecase.UseCase;
+import com.interview.demo.common.usecase.UseCase;
 import lombok.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

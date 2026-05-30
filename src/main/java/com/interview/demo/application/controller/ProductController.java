@@ -5,7 +5,7 @@ import com.interview.demo.application.usecase.product.DeleteProductUseCase;
 import com.interview.demo.application.usecase.product.FilterProductUseCase;
 import com.interview.demo.application.usecase.product.UpdateProductUseCase;
 import com.interview.demo.application.usecase.product.ViewDetailProductUseCase;
-import com.interview.demo.core.usecase.UseCaseExecutor;
+import com.interview.demo.common.usecase.UseCaseExecutor;
 import com.interview.demo.domain.entities.api.request.FilterRequest;
 import com.interview.demo.domain.entities.api.response.ApiResponse;
 import com.interview.demo.domain.entities.api.response.ResponseMapper;

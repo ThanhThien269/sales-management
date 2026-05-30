@@ -1,6 +1,6 @@
 package com.interview.demo.domain.repositories;
 
-import com.interview.demo.core.repositories.CommonDbEntityRepository;
+import com.interview.demo.common.repositories.CommonDbEntityRepository;
 import com.interview.demo.domain.entities.database.Product;
 import com.interview.demo.domain.entities.request_dto.product.ProductFilterOption;
 import com.interview.demo.domain.entities.response_dto.product.ProductResponse;
