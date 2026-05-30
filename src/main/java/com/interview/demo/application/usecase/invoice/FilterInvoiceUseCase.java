@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -47,8 +46,8 @@ public class FilterInvoiceUseCase extends UseCase<FilterInvoiceUseCase.InputValu
 
         // Batch-fetch items cho tất cả invoices trong 1 query
         if (!invoices.isEmpty()) {
-            List<UUID> invoiceIds = invoices.stream()
-                    .map(i -> UUID.fromString(i.getId()))
+            List<String> invoiceIds = invoices.stream()
+                    .map(InvoiceResponse::getId)
                     .collect(Collectors.toList());
 
             List<InvoiceItemResponse> allItems = invoiceRepository.findItemsByInvoiceIds(invoiceIds);

@@ -1,9 +1,9 @@
 package com.interview.demo.domain.entities.request_dto.product;
 
 import com.interview.demo.core.filter.FilterOption;
-import com.interview.demo.constant.database.ProductStatusEnum;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -13,21 +13,17 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ProductFilterOption extends FilterOption {
 
-
     private String name;
     private Integer categoryId;
     private UUID productId;
-    private Integer statusId;
+    private List<Integer> status;
 
     @Override
     public boolean isAllFieldsNull() {
         return name == null
                 && categoryId == null
                 && productId == null
-                && statusId == null;
-    }
-    public ProductStatusEnum getStatusEnum() {
-        return statusId != null ? ProductStatusEnum.fromId(statusId) : null;
+                && (status == null || status.isEmpty());
     }
 }
 

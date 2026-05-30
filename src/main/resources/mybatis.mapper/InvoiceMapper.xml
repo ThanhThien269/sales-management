@@ -71,7 +71,7 @@
         LEFT JOIN products p ON p.id = ii.product_id
         WHERE ii.invoice_id IN
         <foreach item="id" collection="invoiceIds" open="(" separator="," close=")">
-            #{id}
+            #{id}::uuid
         </foreach>
 
     </select>

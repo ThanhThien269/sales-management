@@ -46,7 +46,7 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
     }
 
     @Override
-    public List<InvoiceItemResponse> findItemsByInvoiceIds(List<UUID> invoiceIds) {
+    public List<InvoiceItemResponse> findItemsByInvoiceIds(List<String> invoiceIds) {
         if (invoiceIds == null || invoiceIds.isEmpty()) return Collections.emptyList();
         return myBatisRepository.findItemsByInvoiceIds(invoiceIds);
     }

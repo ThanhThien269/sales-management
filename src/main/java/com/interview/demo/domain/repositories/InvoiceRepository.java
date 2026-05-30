@@ -15,6 +15,6 @@ import java.util.UUID;
 public interface InvoiceRepository extends CommonDbEntityRepository<Invoice, UUID> {
     List<InvoiceResponse> findByFilterOptions(InvoiceFilterOption filter, Integer page, Integer size);
     List<InvoiceItem> saveAllItems(List<InvoiceItem> items);
-    List<InvoiceItemResponse> findItemsByInvoiceIds(List<UUID> invoiceIds);
+    List<InvoiceItemResponse> findItemsByInvoiceIds(List<String> invoiceIds);
 }
 

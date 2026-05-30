@@ -40,8 +40,11 @@
             AND p.category_id = #{f.categoryId}
         </if>
 
-        <if test="f.statusId != null">
-            AND p.status_id = #{f.statusId}
+        <if test="f.status != null and f.status.size() > 0">
+            AND p.status_id IN
+            <foreach item="s" collection="f.status" open="(" separator="," close=")">
+                #{s}
+            </foreach>
         </if>
 
         ORDER BY p.created_at DESC
