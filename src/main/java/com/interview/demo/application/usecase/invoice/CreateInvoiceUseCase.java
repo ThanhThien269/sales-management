@@ -2,6 +2,7 @@ package com.interview.demo.application.usecase.invoice;
 
 import com.interview.demo.application.validation.ProductValidation;
 import com.interview.demo.constant.database.InvoiceStatusEnum;
+import com.interview.demo.constant.database.ProductStatusEnum;
 import com.interview.demo.constant.enumuration.MessageCode;
 import com.interview.demo.core.usecase.UseCase;
 import com.interview.demo.core.usecase.UseCaseContext;
@@ -61,31 +62,34 @@ public class CreateInvoiceUseCase extends UseCase<CreateInvoiceUseCase.InputValu
 
             int orderQty = itemReq.getQuantity();
             int stock = product.getQuantity() != null ? product.getQuantity() : 0;
-            if (orderQty > stock) {
-                throw new IllegalArgumentException(String.format(
-                        "Not enough stock for product '%s'. Requested: %d, Available: %d",
-                        product.getName(), orderQty, stock));
-            }
+
+            // Cap quantity tối đa theo stock hiện có
+            int actualQty = Math.min(orderQty, stock);
 
             BigDecimal price = product.getPrice();
-            BigDecimal subTotal = price.multiply(BigDecimal.valueOf(orderQty));
+            BigDecimal subTotal = price.multiply(BigDecimal.valueOf(actualQty));
             originalAmount = originalAmount.add(subTotal);
 
-
-            product.setQuantity(stock - orderQty);
+            int newStock = stock - actualQty;
+            product.setQuantity(newStock);
             int sold = product.getSoldQuantity() != null ? product.getSoldQuantity() : 0;
-            product.setSoldQuantity(sold + orderQty);
+            product.setSoldQuantity(sold + actualQty);
+
+
+            if (newStock == 0) {
+                product.setStatus(ProductStatusEnum.OUT_OF_STOCK);
+            }
             productRepository.save(product);
 
             itemsToSave.add(InvoiceItem.builder()
                     .productId(itemReq.getProductId())
-                    .quantity(orderQty)
+                    .quantity(actualQty)
                     .price(price)
                     .build());
 
             itemResponses.add(InvoiceItemResponse.builder()
                     .productId(itemReq.getProductId().toString())
-                    .quantity(orderQty)
+                    .quantity(actualQty)
                     .price(price)
                     .subTotal(subTotal)
                     .build());
